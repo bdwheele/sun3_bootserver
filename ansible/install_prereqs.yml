@@ -1,0 +1,12 @@
+---
+- name: Packages
+  apt:
+    pkg:
+      - wget
+      - curl      
+      - tftpd
+      - rarpd
+      - bootparamd
+      - tio
+    state: present
+

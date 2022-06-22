@@ -1,0 +1,6 @@
+---
+- hosts: localhost
+  tasks:
+    - name: Prereqs tasks
+      include_tasks: install_prereqs.yml
+      
