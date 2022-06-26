@@ -28,7 +28,7 @@ sun3:
   # if you have a 3/80 or 3/460, set is_sun3x to true.
   # I don't have one, so I can't test it.  Feel free to submit patches.
   is_sun3x:  false
-  mac_address: 08:00:20:4E:BD
+  mac_address: 08:00:20:00:4E:BD
   hostname: mysun3
   ip_addr: 192.168.0.2
   swapfile: 64M

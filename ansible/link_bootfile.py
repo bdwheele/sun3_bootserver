@@ -20,7 +20,7 @@ def main():
     hexfile = Path("/srv/tftp", hexaddr)
     if hexfile.exists():
         hexfile.unlink()
-    hexfile.symlink_to(bootfile)
+    bootfile.link_to(hexfile)
     
 
 

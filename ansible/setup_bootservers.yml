@@ -12,14 +12,40 @@
     name: rarpd.service
     state: restarted
 
-- name: Symlink boot image
+- name: Copy boot image
   shell: ./link_bootfile.py {{ 'boot.sun3x' if settings.sun3.is_sun3x else 'boot.sun3' }} {{ settings.sun3.ip_addr }}
   
+- name: Set TFTP server options
+  lineinfile:
+    path: /etc/default/tftpd-hpa
+    line: TFTP_OPTIONS="-vvv --secure"
+    regex: ^TFTP_OPTIONS
+  register: tftp_options
+
+- name: Restart tftpd
+  systemd:
+    name: tftpd-hpa.service
+    state: restarted
+  when: tftp_options.changed
+
 - name: Add host to /etc/hosts
   lineinfile:
     path: /etc/hosts
     line: "{{ settings.sun3.ip_addr }}  {{ settings.sun3.hostname }}"
     regex: "^{{ settings.sun3.ip_addr }}"
+
+- name: enabled debugging on rpcbind
+  lineinfile:
+    path: /etc/default/rpcbind
+    line: OPTIONS="-w -d"
+    regex: ^OPTIONS
+  register: rpcbind_config
+
+- name: restart rpcbind
+  systemd:
+    name: rpcbind
+    state: restarted
+  when: rpcbind_config.changed
 
 - name: Generate bootparam config line
   shell: ./generate_bootparam.py {{ settings.sun3.hostname }} {{ settings.pi.ether_ip_addr }} {{ settings.pi.ether_ip_maskbits }}
