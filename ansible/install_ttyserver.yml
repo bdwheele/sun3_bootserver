@@ -8,8 +8,32 @@
     name: "{{ settings.tty_server.user }}"
     comment: Terminal Server user
     append: yes
+    create_home: yes
+    home: /home/{{ settings.tty_server.user }}
     groups: 
       - dialout
     state: present
 
-    
+- name: Set password for terminal server user
+  user:
+    name: "{{ settings.tty_server.user }}"
+    password: "{{ settings.tty_server.password | password_hash('sha512')}}"
+
+- name: Set .profile for terminal server user
+  blockinfile:
+    path: /home/{{ settings.tty_server.user }}/.profile
+    insertafter: EOF
+    owner: "{{ settings.tty_server.user }}"
+    group: "{{ settings.tty_server.user }}"
+    mode: 0750
+    block: |
+      echo Using device {{ settings.tty_server.device }}
+      echo rate settings {{ settings.tty_server.baudrate }},{{ settings.tty_server.databits }},{{ settings.tty_server.parity }},{{ settings.tty_server.stopbits }}
+      echo flow settings {{ settings.tty_server.flow }}
+      tio --baudrate {{ settings.tty_server.baudrate }} \
+          --databits {{ settings.tty_server.databits }} \
+          --parity {{ settings.tty_server.parity }} \
+          --stopbits {{ settings.tty_server.stopbits }} \
+          --flow {{ settings.tty_server.flow }} \
+          {{ settings.tty_server.device }}
+      exit

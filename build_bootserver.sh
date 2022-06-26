@@ -4,4 +4,4 @@
 #
 
 cd ansible
-sudo ansible-playbook bootserver.yml -i inventory.yml
+sudo ansible-playbook bootserver.yml -i inventory.yml "$@"

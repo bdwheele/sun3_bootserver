@@ -1,0 +1,130 @@
+---
+- name: Create distribution directory tree
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /srv/sunos_411_dist
+    - /srv/sunos_411_dist/sun3
+    - /srv/sunos_411_dist/sun3x
+    - /srv/sunos_411_dist/misc_patches
+    - /srv/sunos_411_dist/sun_patches
+    - /srv/sunos_411_dist/precompiled
+
+- name: Check if the .download_finished file exists
+  stat:
+    path: /srv/sunos_411_dist/.download_finished
+  register: download_finished
+
+
+- name: Download Sun3 4.1.1 Boot tape distribution
+  get_url:
+    dest: /srv/sunos_411_dist/sun3
+    url: https://www.sun3arc.org/BootTapes/Sun3/{{ item }}
+  when: not download_finished.stat.exists
+  with_items:
+    - miniroot_sun3	
+    - munix_sun3	
+    - munixfs_sun3	
+    - sun3_debugging.tar.Z	
+    - sun3_demo.tar.Z	
+    - sun3_games.tar.Z	
+    - sun3_graphics.tar.Z	
+    - sun3_install.tar.Z	
+    - sun3_kvm.tar.Z	
+    - sun3_manual.tar.Z	
+    - sun3_networking.tar.Z	
+    - sun3_openwindows_demo.tar.Z	
+    - sun3_openwindows_fonts.tar.Z	
+    - sun3_openwindows_programmers.tar.Z	
+    - sun3_openwindows_users.tar.Z	
+    - sun3_patch_cplusplus_2_0.tar.Z	
+    - sun3_patch_ipc.tar.Z	
+    - sun3_patch_taac.tar.Z	
+    - sun3_proto_root.sunos_4_1_1.tar.Z	
+    - sun3_rfs.tar.Z	
+    - sun3_security.tar.Z	
+    - sun3_shlib_custom.tar.Z	
+    - sun3_sunview_demo.tar.Z	
+    - sun3_sunview_programmers.tar.Z	
+    - sun3_sunview_users.tar.Z	
+    - sun3_sys.tar.Z	
+    - sun3_system_v.tar.Z	
+    - sun3_text.tar.Z	
+    - sun3_tli.tar.Z	
+    - sun3_user_diag.tar.Z	
+    - sun3_usr.tar.Z	
+    - sun3_uucp.tar.Z	
+    - sun3_versatec.tar.Z
+
+- name: Download Sun3x 4.1.1 Boot tape distribution
+  get_url:
+    dest: /srv/sunos_411_dist/sun3x
+    url: https://www.sun3arc.org/BootTapes/Sun3x/{{ item }}
+  when: not download_finished.stat.exists
+  with_items:
+    - miniroot_sun3x	
+    - munix_sun3x	
+    - munixfs_sun3x	
+    - sun3_debugging.tar.Z	
+    - sun3_demo.tar.Z	
+    - sun3_games.tar.Z	
+    - sun3_graphics.tar.Z	
+    - sun3_install.tar.Z	
+    - sun3_kvm.tar.Z	
+    - sun3_manual.tar.Z	
+    - sun3_networking.tar.Z	
+    - sun3_openwindows_demo.tar.Z	
+    - sun3_openwindows_fonts.tar.Z	
+    - sun3_openwindows_programmers.tar.Z	
+    - sun3_openwindows_users.tar.Z	
+    - sun3_patch_cplusplus_2_0.tar.Z	
+    - sun3_patch_ipc.tar.Z	
+    - sun3_patch_taac.tar.Z	
+    - sun3_proto_root.sunos_4_1_1.tar.Z	
+    - sun3_rfs.tar.Z	
+    - sun3_security.tar.Z	
+    - sun3_shlib_custom.tar.Z	
+    - sun3_sunview_demo.tar.Z	
+    - sun3_sunview_programmers.tar.Z	
+    - sun3_sunview_users.tar.Z	
+    - sun3_sys.tar.Z	
+    - sun3_system_v.tar.Z	
+    - sun3_text.tar.Z	
+    - sun3_tli.tar.Z	
+    - sun3_user_diag.tar.Z	
+    - sun3_usr.tar.Z	
+    - sun3_uucp.tar.Z	
+    - sun3_versatec.tar.Z	
+    - sun3x_kvm.tar.Z	
+    - sun3x_sys.tar.Z	
+
+- name: Download 4.1.1U1 Update
+  get_url:
+    dest: /srv/sunos_411_dist/sun_patches
+    url: https://gts.org/export/sun-archive/Sun-Patches/Sun_4.1.1U1.tar.gz
+  when: not download_finished.stat.exists
+
+- name: Download Y2K patch
+  get_url:
+    dest: /srv/sunos_411_dist/misc_patches
+    url: https://www.sun3arc.org/Misc-Patches/y2kpatch-04.tar.gz
+  when: not download_finished.stat.exists
+
+- name: Download some precompiled binaries
+  get_url:
+    dest: /srv/sunos_411_dist/precompiled
+    url: https://www.sun3arc.org/precompiled/{{ item }}
+  when: not download_finished.stat.exists
+  with_items:
+    - gcc-3.2.3.tar.gz
+    - binutils-2.8.1.1.tar.gz
+    - gzip
+    - perl5.8.8.tar.gz
+    - openssh-4.3p2+openssl-0.98a+ocrandom_rev2.tar.gz
+    - net.tar.gz
+
+- name: Touch the .download_finished file.
+  file:
+    path: /srv/sunos_411_dist/.download_finished
+    state: touch

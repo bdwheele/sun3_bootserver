@@ -22,10 +22,36 @@
     include_tasks: install_ttyserver.yml
     when: settings.tty_server.enabled
 
-  - name: run ls
-    shell: ls -lrt
-    register: output
-    when: settings.tty_server.enabled
-  - debug: var=output.stdout_lines
-  
-      
+  # Set up the ethernet on the RPi
+  #- name: Set up eth0
+
+
+
+
+
+  - name: Download the SunOS 4.1.1 Distribution(s)
+    include_tasks: download_distribution.yml
+
+  - name: Create TFTP boot directory
+    file:
+      path: /tftpboot
+      state: directory
+
+  - name: Setup NFS root
+    include_tasks: setup_nfsroot.yml
+
+  - name: Set up /etc/ethers
+    lineinfile:
+      path: /etc/ethers
+      line: "{{ settings.sun3.mac_address }}      {{ settings.sun3.ip_addr }}"
+      state: present
+      create: yes
+
+  - name: Restart RARPD
+    systemd:
+      name: rarpd.service
+      state: restarted
+
+
+
+
