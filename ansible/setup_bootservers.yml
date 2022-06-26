@@ -37,7 +37,7 @@
 - name: enabled debugging on rpcbind
   lineinfile:
     path: /etc/default/rpcbind
-    line: OPTIONS="-w -d"
+    line: OPTIONS="-w -d -r"
     regex: ^OPTIONS
   register: rpcbind_config
 
@@ -65,6 +65,18 @@
     state: restarted
   when:  bootparamd.changed
 
+- name: Enable NFSv2
+  lineinfile:
+    path: /etc/default/nfs-kernel-server
+    line: RPCNFSDOPTS="--nfs-version 2,3,4 --debug --syslog"
+    regex: ^RPCNFSDOPTS
+  register:  kernel_nfs
+
+- name: Restart Kernel NFS server
+  systemd:
+    name: nfs-server
+    state: restarted
+  when: kernel_nfs.changed
 
 - name: Configure NFS root export to client
   lineinfile:
