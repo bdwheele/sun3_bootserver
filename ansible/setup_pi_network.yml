@@ -1,0 +1,38 @@
+---
+- name: Setup ethernet IP
+  blockinfile:
+    path: /etc/network/interfaces.d/eth0
+    create: yes
+    block: |
+      auto eth0
+      iface eth0 inet static
+        address {{ settings.pi.ether_ip_addr }}/{{ settings.pi.ether_ip_maskbits }}
+  register: net_ip
+
+- name: Bring down ethernet
+  shell: ifdown eth0
+  when: net_ip.changed
+
+- name: Bring up ethernet
+  shell: ifup eth0
+  when: net_ip.changed
+
+- name: Enable IP forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    reload: yes
+
+- name: Configure masquerading  
+  blockinfile: 
+    path: /etc/nftables.conf
+    block: |
+      table ip nat {
+        chain prerouting {
+          type nat hook prerouting priority -100;
+        }
+        chain postrouting {
+          type nat hook postrouting priority 100;        
+          oifname wlan0 masqurade
+        }
+      }

@@ -22,7 +22,7 @@ tty_server:
 pi:
   # Configuration for the Raspberry Pi server itself.
   ether_ip_addr:  192.168.0.1
-  ether_ip_netmask: 255.255.255.0
+  ether_ip_maskbits: 24
 
 sun3:
   # if you have a 3/80 or 3/460, set is_sun3x to true.

@@ -23,4 +23,4 @@ cp $SUN3ARC/sun3/munix* .
 cd dev
 ./MAKEDEV std
 cd $SUN3HOME
-cp usr/kvm/stand/boot.sun3 /tftpboot
+cp usr/kvm/stand/boot.sun3 /srv/tftp

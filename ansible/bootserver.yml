@@ -13,45 +13,28 @@
       pkg:
         - wget
         - curl      
-        - tftpd
+        - tftpd-hpa
         - rarpd
         - bootparamd      
+        - nfs-kernel-server
       state: present
 
-  - name: Do the ttyserver setup
-    include_tasks: install_ttyserver.yml
-    when: settings.tty_server.enabled
 
-  # Set up the ethernet on the RPi
-  #- name: Set up eth0
-
-
-
-
-
+  - name: Setup Pi Networking
+    include_tasks: setup_pi_network.yml
+    
   - name: Download the SunOS 4.1.1 Distribution(s)
     include_tasks: download_distribution.yml
 
-  - name: Create TFTP boot directory
-    file:
-      path: /tftpboot
-      state: directory
 
   - name: Setup NFS root
     include_tasks: setup_nfsroot.yml
 
-  - name: Set up /etc/ethers
-    lineinfile:
-      path: /etc/ethers
-      line: "{{ settings.sun3.mac_address }}      {{ settings.sun3.ip_addr }}"
-      state: present
-      create: yes
-
-  - name: Restart RARPD
-    systemd:
-      name: rarpd.service
-      state: restarted
+  - name: Setup Bootservers
+    include_tasks: setup_bootservers.yml
 
 
 
-
+  - name: Do the ttyserver setup
+    include_tasks: install_ttyserver.yml
+    when: settings.tty_server.enabled

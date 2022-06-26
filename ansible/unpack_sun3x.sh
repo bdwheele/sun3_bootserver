@@ -23,4 +23,4 @@ cp $SUN3ARC/sun3x/miniroot_sun3x .
 cp $SUN3ARC/sun3x/munix* .
 cd dev
 ./MAKEDEV std
-cp usr/kvm/stand/boot.sun3x /tftpboot
+cp usr/kvm/stand/boot.sun3x /srv/tftp

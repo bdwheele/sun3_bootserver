@@ -1,0 +1,61 @@
+---
+- name: Set up /etc/ethers
+  lineinfile:
+    path: /etc/ethers
+    line: "{{ settings.sun3.mac_address }}      {{ settings.sun3.ip_addr }}"
+    state: present
+    regex: "^{{ settings.sun3.mac_address }}"
+    create: yes
+
+- name: Restart RARPD
+  systemd:
+    name: rarpd.service
+    state: restarted
+
+- name: Symlink boot image
+  shell: ./link_bootfile.py {{ 'boot.sun3x' if settings.sun3.is_sun3x else 'boot.sun3' }} {{ settings.sun3.ip_addr }}
+  
+- name: Add host to /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ settings.sun3.ip_addr }}  {{ settings.sun3.hostname }}"
+    regex: "^{{ settings.sun3.ip_addr }}"
+
+- name: Generate bootparam config line
+  shell: ./generate_bootparam.py {{ settings.sun3.hostname }} {{ settings.pi.ether_ip_addr }} {{ settings.pi.ether_ip_maskbits }}
+  register: bootparamd_config
+
+- name: Configure bootparams
+  lineinfile:
+    path: /etc/bootparams
+    create: yes
+    regex: ^{{ settings.sun3.hostname }}\s
+    line: "{{ bootparamd_config.stdout }}"
+  register: bootparamd
+
+- name: Restart bootparamd
+  systemd:
+    name: bootparamd.service
+    state: restarted
+  when:  bootparamd.changed
+
+
+- name: Configure NFS root export to client
+  lineinfile:
+    path: /etc/exports
+    line: /srv/nfsroot/{{ settings.sun3.hostname }}  {{ settings.sun3.ip_addr }}(rw,insecure,no_root_squash,no_subtree_check)
+    regex: ^/srv/nfsroot/{{settings.sun3.hostname}}\s
+  register: nfs_root_export
+
+#- name: Configure NFS swapfile export to client
+#  lineinfile:
+#    path: /etc/exports
+#    line: /srv/nfsroot/{{ settings.sun3.hostname }}/swapfile  {{ settings.sun3.ip_addr }}(rw,insecure,no_root_squash,no_subtree_check)
+#    regex: ^/srv/nfsroot/{{settings.sun3.hostname}}/swapfile\s
+#  register: nfs_swap_export
+
+- name: Export filesystems
+  #when: nfs_swap_export.changed or nfs_root_export.changed
+  when: nfs_root_export.changed
+  shell: exportfs -a
+
