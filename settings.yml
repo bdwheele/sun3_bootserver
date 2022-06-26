@@ -30,5 +30,6 @@ sun3:
   is_sun3x:  false
   mac_address: 08:00:20:00:4E:BD
   hostname: mysun3
+  domainname: example.com
   ip_addr: 192.168.0.2
   swapfile: 64M

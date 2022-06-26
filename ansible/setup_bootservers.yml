@@ -22,11 +22,18 @@
     regex: ^TFTP_OPTIONS
   register: tftp_options
 
+- name: Set TFTP bind address
+  lineinfile:
+    path: /etc/default/tftpd-hpa
+    line: TFTP_ADDRESS={{ settings.pi.ether_ip_addr }}:69
+    regex: ^TFTP_ADDRESS
+  register: tftp_address
+
 - name: Restart tftpd
   systemd:
     name: tftpd-hpa.service
     state: restarted
-  when: tftp_options.changed
+  when: tftp_options.changed or tftp_address.changed
 
 - name: Add host to /etc/hosts
   lineinfile:
@@ -37,7 +44,7 @@
 - name: enabled debugging on rpcbind
   lineinfile:
     path: /etc/default/rpcbind
-    line: OPTIONS="-w -d -r"
+    line: OPTIONS="-w -d -r -i -h {{ settings.pi.ether_ip_addr }}"
     regex: ^OPTIONS
   register: rpcbind_config
 
@@ -85,15 +92,15 @@
     regex: ^/srv/nfsroot/{{settings.sun3.hostname}}\s
   register: nfs_root_export
 
-#- name: Configure NFS swapfile export to client
-#  lineinfile:
-#    path: /etc/exports
-#    line: /srv/nfsroot/{{ settings.sun3.hostname }}/swapfile  {{ settings.sun3.ip_addr }}(rw,insecure,no_root_squash,no_subtree_check)
-#    regex: ^/srv/nfsroot/{{settings.sun3.hostname}}/swapfile\s
-#  register: nfs_swap_export
+- #name: Configure NFS swapfile export to client
+  #lineinfile:
+  #  path: /etc/exports
+  #  line: /srv/nfsroot/{{ settings.sun3.hostname }}/swapfile  {{ settings.sun3.ip_addr }}(rw,insecure,no_root_squash,no_subtree_check)
+  #  regex: ^/srv/nfsroot/{{settings.sun3.hostname}}/swapfile\s
+  #register: nfs_swap_export  
 
 - name: Export filesystems
   #when: nfs_swap_export.changed or nfs_root_export.changed
   when: nfs_root_export.changed
   shell: exportfs -a
-
+  ignore_errors: true
