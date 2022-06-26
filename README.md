@@ -117,6 +117,10 @@ latter, since it allows for copy/paste
 sudo bash
 apt update
 apt install -y git ansible 
-
-
 ````
+
+### Clone the repository
+Get this repository on the system
+```
+git clone https://github.com/bdwheele/sun3_bootserver.git
+```

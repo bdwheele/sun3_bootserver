@@ -1,3 +1,7 @@
 #!/bin/bash
+#
+# Run the ansible setup
+#
 
-ansible
+cd ansible
+sudo ansible-playbook bootserver.yml -i inventory.yml

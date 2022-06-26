@@ -1,0 +1,15 @@
+---
+- name: Install terminal server packages
+  apt:
+    pkg: tio
+    state: present
+- name: Create terminal server user
+  user:
+    name: "{{ settings.tty_server.user }}"
+    comment: Terminal Server user
+    append: yes
+    groups: 
+      - dialout
+    state: present
+
+    

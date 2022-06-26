@@ -1,6 +1,31 @@
 ---
-- hosts: localhost
+- name: Install Sun3 Bootserver
+  hosts: localhost
+  connection: local
   tasks:
-    - name: Prereqs tasks
-      include_tasks: install_prereqs.yml
+  - name: Load settings from settings.yml
+    include_vars:
+      name: settings      
+      file: ../settings.yml
+
+  - name: Install Packages
+    apt:
+      pkg:
+        - wget
+        - curl      
+        - tftpd
+        - rarpd
+        - bootparamd      
+      state: present
+
+  - name: Do the ttyserver setup
+    include_tasks: install_ttyserver.yml
+    when: settings.tty_server.enabled
+
+  - name: run ls
+    shell: ls -lrt
+    register: output
+    when: settings.tty_server.enabled
+  - debug: var=output.stdout_lines
+  
       

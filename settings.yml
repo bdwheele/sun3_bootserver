@@ -1,0 +1,9 @@
+---
+# Settings for the bootserver
+
+tty_server:
+  enabled: false
+  device: /dev/ttyUSB4
+  user: terminal
+  password: terminal
+
