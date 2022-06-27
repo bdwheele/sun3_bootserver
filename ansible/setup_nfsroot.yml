@@ -16,13 +16,18 @@
   when: not nfs_client_root.stat.exists
 
 - name: Unpack Sun3 Distribution in NFS root
-  shell: ./unpack_sun3.sh /srv/nfsroot/{{ settings.sun3.hostname }}
-  when: not settings.sun3.is_sun3x and not nfs_client_root.stat.exists
+  shell: ./unpack_sunos_sun3.sh /srv/nfsroot/{{ settings.sun3.hostname }}
+  when: settings.sun3.os == "sunos" and (not settings.sun3.is_sun3x and not nfs_client_root.stat.exists)
 
 # This isn't implemented.  Feel free to do so.
 - name: Unpack Sun3x Distribution in NFS root
-  shell: ./unpack_sun3x.sh /srv/nfsroot/{{ settings.sun3.hostname }}
-  when: settings.sun3.is_sun3x and not nfs_client_root.stat.exists
+  shell: ./unpack_sunos_sun3x.sh /srv/nfsroot/{{ settings.sun3.hostname }}
+  when: settings.sun3.os == "sunos" and settings.sun3.is_sun3x and not nfs_client_root.stat.exists
+
+- name: Unpack NetBSD Distribution in NFS root
+  shell: ./unpack_netbsd.sh /srv/nfsroot/{{ settings.sun3.hostname }} 
+  when: settings.sun3.os == "netbsd" and not nfs_client_root.stat.exists
+
 
 - name: Create the swapfile
   shell: dd if=/dev/zero of=/srv/nfsroot/{{ settings.sun3.hostname }}/swapfile bs={{ settings.sun3.swapfile }} count=1

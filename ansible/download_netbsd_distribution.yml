@@ -1,0 +1,50 @@
+---
+- name: Create distribution directory tree
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /srv/netbsd-9.2
+    
+
+- name: Check if the .download_finished file exists
+  stat:
+    path: /srv/netbsd-9.2/.download_finished
+  register: download_finished
+
+
+- name: Download NetBSD 9.2 for Sun3 
+  get_url:
+    dest: /srv/netbsd-9.2
+    url: https://cdn.netbsd.org/pub/NetBSD/NetBSD-9.2/sun3/{{ item }}
+  when: not download_finished.stat.exists
+  with_items:
+    - installation/netboot/netboot
+    - installation/miniroot/miniroot.fs.gz
+    - binary/kernel/netbsd-DISKLESS.gz
+    - binary/kernel/netbsd-DISKLESS3X.gz
+    - binary/sets/base.tgz
+    - binary/sets/comp.tgz
+    - binary/sets/debug.tgz
+    - binary/sets/etc.tgz
+    - binary/sets/games.tgz
+    - binary/sets/kern-DISKLESS.tgz
+    - binary/sets/kern-DISKLESS3X.tgz
+    - binary/sets/man.tgz
+    - binary/sets/misc.tgz
+    - binary/sets/modules.tgz
+    - binary/sets/rescue.tgz
+    - binary/sets/tests.tgz
+    - binary/sets/text.tgz
+    - binary/sets/xbase.tgz
+    - binary/sets/xcomp.tgz
+    - binary/sets/xdebug.tgz
+    - binary/sets/xetc.tgz
+    - binary/sets/xfont.tgz
+    - binary/sets/xserver.tgz
+
+
+- name: Touch the .download_finished file.
+  file:
+    path: /srv/netbsd-9.2/.download_finished
+    state: touch

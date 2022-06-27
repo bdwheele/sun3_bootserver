@@ -33,3 +33,4 @@ sun3:
   domainname: example.com
   ip_addr: 192.168.0.2
   swapfile: 64M
+  os: netbsd

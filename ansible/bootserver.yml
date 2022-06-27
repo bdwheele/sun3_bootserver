@@ -24,8 +24,12 @@
     include_tasks: setup_pi_network.yml
     
   - name: Download the SunOS 4.1.1 Distribution(s)
-    include_tasks: download_distribution.yml
+    include_tasks: download_sunos_distribution.yml
+    when: settings.sun3.os == "sunos"
 
+  - name: Download NetBSD Distribution
+    include_tasks: download_netbsd_distribution.yml
+    when: settings.sun3.os == "netbsd"
 
   - name: Setup NFS root
     include_tasks: setup_nfsroot.yml

@@ -29,10 +29,25 @@ Research:
 During a diagnotic boot, Serial Port A is 9600,8,n,1 and Serial Port B is 1200,8,n,1.
 
 
-Serial Port A is 9600 baud by default.  I've set the norm/diag switch to diag so I have to hit a key to get to the boot prom (normal doesn't return anything)
+Serial Port A is 9600 baud by default.  I've set the norm/diag switch to diag so I have to hit a key to get to the boot prom (normal doesn't return anything -- console not set up)
+
+Per the NetBSD install:
+
+ The console location (ttya, ttyb, or keyboard/display) is controlled by address 0x1F in the EEPROM, which you can examine and change in the PROM monitor by entering q1f followed by a numeric value (or just a `.' if you don't want to change it). Console values are:
+
+00    Default graphics display
+
+10    tty a (9600-N-8-1)
+
+11    tty b (1200-N-8-1)
+
+20    Color option board on P4 
+
+
 
 ## Getting the Sun MAC address
 
+If you can only use diag mode, the mac address can be retrieved via the eprom data:
 ```
 >^i
 Compiled on pest at 09/02/87 in /usr/src/sun/mon3/SUN3F

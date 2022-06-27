@@ -12,9 +12,15 @@
     name: rarpd.service
     state: restarted
 
-- name: Copy boot image
+- name: Copy SunOS boot image
   shell: ./link_bootfile.py {{ 'boot.sun3x' if settings.sun3.is_sun3x else 'boot.sun3' }} {{ settings.sun3.ip_addr }}
-  
+  when: settings.sun3.os == "sunos"
+
+- name: Copy NetBSD boot image
+  shell: ./link_bootfile.py netboot {{ settings.sun3.ip_addr }}
+  when: settings.sun3.os == "netbsd"
+
+
 - name: Set TFTP server options
   lineinfile:
     path: /etc/default/tftpd-hpa
