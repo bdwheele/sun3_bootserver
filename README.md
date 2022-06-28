@@ -87,13 +87,8 @@ http://www.bitsavers.org/pdf/sun/sunos/4.0.3/800-1736-10A_PROM_Users_Manual_Adde
 
 
 
-## Using the image
 
-TBD
-
-
-
-## Building the Pi Image
+## Building the Pi Server
 
 ### Create base Pi OS SD Card
 
@@ -138,4 +133,22 @@ apt install -y git ansible
 Get this repository on the system
 ```
 git clone https://github.com/bdwheele/sun3_bootserver.git
+```
+
+### Modify the settings
+Modify the settings.yml file to customize for your environment.  The build can
+be used multiple times to provide a bootserver for more than one machine.
+
+If the sun3 os is set to "sunos", it will (attempt) to install SunOS 4.1.1
+
+If it is set to "netbsd", the version in netbsd_version will be used, from 
+version 1.6 to 9.2  (tested with 1.6 and 9.2)
+
+If the tty_server is enabled, a user will be configured to allow ssh access to
+the USB<->serial device specified using the tio program.
+
+### Run the bootstrap
+
+```
+./build_bootserver.sh
 ```
