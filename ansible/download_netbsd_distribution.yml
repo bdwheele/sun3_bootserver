@@ -4,19 +4,30 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - /srv/netbsd-9.2
+    - /srv/netbsd
+    - /srv/netbsd/{{ settings.sun3.netbsd_version }}
     
 
 - name: Check if the .download_finished file exists
   stat:
-    path: /srv/netbsd-9.2/.download_finished
+    path: /srv/netbsd/{{ settings.sun3.netbsd_version }}/.download_finished
   register: download_finished
 
+#
+# This should support NetBSD-1.6 to NetBSD-9.2, and possibly later
+#
 
-- name: Download NetBSD 9.2 for Sun3 
+- name: Test if this version of NetBSD is an archive version
+  uri:
+    url: http://ftp.netbsd.org/pub/NetBSD/NetBSD-{{settings.sun3.netbsd_version}}
+    method: HEAD
+  register: archive
+  failed_when: archive.status is undefined or archive.status <= 0
+
+- name: Download NetBSD for Sun3 
   get_url:
-    dest: /srv/netbsd-9.2
-    url: https://cdn.netbsd.org/pub/NetBSD/NetBSD-9.2/sun3/{{ item }}
+    dest: /srv/netbsd/{{ settings.sun3.netbsd_version }}
+    url: http://{{ 'archive.netbsd.org/pub/NetBSD-archive' if archive.status == 404 else 'ftp.netbsd.org/pub/NetBSD'}}/NetBSD-{{settings.sun3.netbsd_version}}/sun3/{{item}}    
   when: not download_finished.stat.exists
   with_items:
     - installation/netboot/netboot
@@ -25,26 +36,34 @@
     - binary/kernel/netbsd-DISKLESS3X.gz
     - binary/sets/base.tgz
     - binary/sets/comp.tgz
-    - binary/sets/debug.tgz
     - binary/sets/etc.tgz
-    - binary/sets/games.tgz
-    - binary/sets/kern-DISKLESS.tgz
-    - binary/sets/kern-DISKLESS3X.tgz
+    - binary/sets/games.tgz    
     - binary/sets/man.tgz
     - binary/sets/misc.tgz
-    - binary/sets/modules.tgz
-    - binary/sets/rescue.tgz
-    - binary/sets/tests.tgz
     - binary/sets/text.tgz
     - binary/sets/xbase.tgz
     - binary/sets/xcomp.tgz
-    - binary/sets/xdebug.tgz
-    - binary/sets/xetc.tgz
     - binary/sets/xfont.tgz
     - binary/sets/xserver.tgz
 
+- name: Download NetBSD for Sun3 (Additional bits)
+  get_url:
+    dest: /srv/netbsd/{{ settings.sun3.netbsd_version }}
+    url: http://{{ 'archive.netbsd.org/pub/NetBSD-archive' if archive.status == 404 else 'ftp.netbsd.org/pub/NetBSD'}}/NetBSD-{{settings.sun3.netbsd_version}}/sun3/{{item}}        
+  when: not download_finished.stat.exists
+  with_items:
+    - binary/sets/debug.tgz
+    - binary/sets/kern-DISKLESS.tgz
+    - binary/sets/kern-DISKLESS3X.tgz
+    - binary/sets/modules.tgz
+    - binary/sets/rescue.tgz
+    - binary/sets/tests.tgz
+    - binary/sets/xdebug.tgz
+    - binary/sets/xetc.tgz
+    - binary/sets/xserver.tgz
+  ignore_errors: true
 
 - name: Touch the .download_finished file.
   file:
-    path: /srv/netbsd-9.2/.download_finished
+    path: /srv/netbsd/{{ settings.sun3.netbsd_version }}/.download_finished
     state: touch

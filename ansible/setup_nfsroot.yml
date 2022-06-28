@@ -25,7 +25,7 @@
   when: settings.sun3.os == "sunos" and settings.sun3.is_sun3x and not nfs_client_root.stat.exists
 
 - name: Unpack NetBSD Distribution in NFS root
-  shell: ./unpack_netbsd.sh /srv/nfsroot/{{ settings.sun3.hostname }} 
+  shell: ./unpack_netbsd.sh /srv/nfsroot/{{ settings.sun3.hostname }} /srv/netbsd/{{ settings.sun3.netbsd_version }}
   when: settings.sun3.os == "netbsd" and not nfs_client_root.stat.exists
 
 

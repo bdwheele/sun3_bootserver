@@ -34,3 +34,5 @@ sun3:
   ip_addr: 192.168.0.2
   swapfile: 64M
   os: netbsd
+  netbsd_version: 1.6.2
+
